@@ -52,26 +52,9 @@ public class RetrofitActivity extends AppCompatActivity {
         try {
             Thread thread = new Thread(new Runnable() {
 
-                //Log.d(MainActivity.TAG, "channel :" + channel.toString());
-                //Log.d(TAG, "channel :" + channel.toString());
-                //} catch (IOException e) {
-                //Log.d(TAG, "error :" + e.getMessage());
-                //e.printStackTrace();
-                //}
-
                 @Override
                 public void run() {
                     Log.d(TAG, "MainActivity");
-
-//                    OkHttpClient client = new OkHttpClient.Builder()
-//                            .addInterceptor(new LoggingInterceptor())
-//                            .build();
-//
-//                    Retrofit retrofit = new Retrofit.Builder()
-//                            .baseUrl(API_URL)
-//                            .addConverterFactory(GsonConverterFactory.create())
-//                            .client(client)
-//                            .build();
 
                     Retrofit retrofit = new Retrofit.Builder()
                             .baseUrl(API_URL)

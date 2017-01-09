@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.Button;
 
 import java_lang_programming.com.android_library_demo.ui.RetrofitActivity;
+import java_lang_programming.com.android_library_demo.ui.RetrofitErrorAndLogActivity;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -50,6 +51,14 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 movieRetrofitActivity();
+            }
+        });
+
+        Button btn_retrofit_log_error = (Button) findViewById(R.id.btn_retrofit_log_error);
+        btn_retrofit_log_error.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                movieRetrofitErrorAndLogActivity();
             }
         });
     }
@@ -113,6 +122,11 @@ public class MainActivity extends AppCompatActivity
 
     private void movieRetrofitActivity() {
         Intent intent = new Intent(this, RetrofitActivity.class);
+        startActivity(intent);
+    }
+
+    private void movieRetrofitErrorAndLogActivity() {
+        Intent intent = new Intent(this, RetrofitErrorAndLogActivity.class);
         startActivity(intent);
     }
 }

@@ -6,4 +6,5 @@
 
     <string name="action_settings">Settings</string>
     <string name="title_activity_retrofit">RetrofitActivity</string>
+    <string name="title_activity_retrofit_error_and_log">RetrofitErrorAndLogActivity</string>
 </resources>

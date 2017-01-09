@@ -12,4 +12,6 @@ import retrofit2.http.Query;
 public interface LivedoorWeatherWebService {
     @GET("v1")
     Call<Weather> webservice(@Query("city") String city);
+    //@GET("v1")
+    //LivedoorWeatherWebServiceCall<Weather> webservice(@Query("city") String city);
 }

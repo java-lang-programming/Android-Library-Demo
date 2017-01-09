@@ -23,6 +23,10 @@
         <activity
             android:name=".ui.RetrofitActivity"
             android:label="@string/title_activity_retrofit"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ui.RetrofitErrorAndLogActivity"
+            android:label="@string/title_activity_retrofit_error_and_log"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
