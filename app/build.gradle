@@ -38,3 +38,27 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:' + rootProject.retrofitVersion
     implementation 'com.squareup.retrofit2:converter-gson:' + rootProject.retrofitVersion
 }
+
+apply plugin: 'findbugs'
+
+task customFindbugs(type: FindBugs) {
+    ignoreFailures = true
+    effort = "max"
+    reportLevel = "low"
+
+    classes = files("$project.buildDir/intermediates/classes")
+
+    // Use this only if you want exclude some errors
+    excludeFilter = file("$rootProject.rootDir/config/findbugs/exclude.xml")
+
+    source = fileTree('src/main/java/')
+    classpath = files()
+
+    reports {
+        xml.enabled false
+        html.enabled true
+        html.setDestination(file("$project.buildDir/outputs/findbugs/findbugs-output.html"))
+    }
+}
+
+check.dependsOn customFindbugs
