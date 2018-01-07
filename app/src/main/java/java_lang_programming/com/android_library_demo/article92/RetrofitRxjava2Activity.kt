@@ -2,7 +2,6 @@ package java_lang_programming.com.android_library_demo.article92
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.View
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -51,7 +50,6 @@ class RetrofitRxjava2Activity : AppCompatActivity(), ErrorDialogFragment.OnFragm
                     }
 
                     override fun onNext(search: Search?) {
-                        Log.d("RetrofitRxjava2", "onNext")
                         search?.results?.forEach({
                             answer.text = with(StringBuilder()) {
                                 append(it.address1)
@@ -71,7 +69,6 @@ class RetrofitRxjava2Activity : AppCompatActivity(), ErrorDialogFragment.OnFragm
                     }
 
                     override fun onError(throwable: Throwable?) {
-                        Log.d("RetrofitRxjava2", "onError : " + throwable)
                         throwable?.let {
                             val errorDialogFragment = ErrorDialogFragment.newInstance(it.message ?: "error")
                             errorDialogFragment.show(supportFragmentManager, "ErrorDialogFragment")
@@ -89,10 +86,8 @@ class RetrofitRxjava2Activity : AppCompatActivity(), ErrorDialogFragment.OnFragm
                     override fun apply(t: Flowable<Throwable>): Flowable<Long> {
                         return t.flatMap(object : io.reactivex.functions.Function<Throwable, Flowable<Long>> {
                             override fun apply(throwable: Throwable): Flowable<Long> {
-                                Log.d("RetrofitRxjava2", "apply Throwable " + retroyCount)
                                 retroyCount = retroyCount + 1
                                 if (retroyCount > 2 && throwable.message == "HTTP 404 Not Found") {
-                                    Log.d("RetrofitRxjava2", "apply retroyCount ")
                                     return Flowable.error(throwable)
                                 }
                                 return Flowable.timer(5, TimeUnit.SECONDS)
@@ -104,12 +99,10 @@ class RetrofitRxjava2Activity : AppCompatActivity(), ErrorDialogFragment.OnFragm
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(object : Subscriber<Search> {
                     override fun onSubscribe(subscription: Subscription?) {
-                        Log.d("RetrofitRxjava2", "onSubscribe")
                         subscription?.request(1000)
                     }
 
                     override fun onNext(search: Search?) {
-                        Log.d("RetrofitRxjava2", "onNext")
                         search?.results?.forEach({
                             answer.text = with(StringBuilder()) {
                                 append(it.address1)
@@ -123,12 +116,11 @@ class RetrofitRxjava2Activity : AppCompatActivity(), ErrorDialogFragment.OnFragm
                     }
 
                     override fun onComplete() {
-                        Log.d("RetrofitRxjava2", "onComplete")
                     }
 
                     override fun onError(t: Throwable?) {
                         t?.let {
-                            val errorDialogFragment = ErrorDialogFragment.newInstance(it.message + " : retry ${retroyCount}回"  ?: "error")
+                            val errorDialogFragment = ErrorDialogFragment.newInstance(it.message + " : retry ${retroyCount}回" ?: "error")
                             errorDialogFragment.show(supportFragmentManager, "ErrorDialogFragment")
                         }
                     }
@@ -139,17 +131,13 @@ class RetrofitRxjava2Activity : AppCompatActivity(), ErrorDialogFragment.OnFragm
     override fun onClickClose() {
         val fragment = supportFragmentManager.findFragmentByTag("ErrorDialogFragment")
         if (fragment is ErrorDialogFragment) {
-            Log.d("RetrofitRxjava2", "onClickClose fragment.dismiss() : ")
             fragment.dismiss()
         }
-
-        //if (!disposableConnectNormal.isDisposed) "disposableConnectNormal.dispose " + disposableConnectNormal.dispose()
     }
 
     override fun onClickRetry() {
         val fragment = supportFragmentManager.findFragmentByTag("ErrorDialogFragment")
         if (fragment is ErrorDialogFragment) {
-            Log.d("RetrofitRxjava2", "onClickRetry fragment.dismiss() : ")
             fragment.dismiss()
         }
         connectNormal()
