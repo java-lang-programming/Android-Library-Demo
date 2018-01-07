@@ -49,7 +49,7 @@
         android:id="@+id/btnRetryConnect"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Normal Connect"
+        android:text="Retry Connect"
         app:layout_constraintRight_toLeftOf="@+id/retryCount"
         app:layout_constraintTop_toBottomOf="@+id/dataGuideline"
         tools:text="Retry Connect" />

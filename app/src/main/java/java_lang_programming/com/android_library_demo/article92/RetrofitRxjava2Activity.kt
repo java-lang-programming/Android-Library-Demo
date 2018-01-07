@@ -19,7 +19,7 @@ import java.lang.StringBuilder
 import java.util.concurrent.TimeUnit
 
 class RetrofitRxjava2Activity : AppCompatActivity(), ErrorDialogFragment.OnFragmentInteractionListener {
-    
+
     private val retrofit = Retrofit.Builder()
             .baseUrl("http://zipcloud.ibsnet.co.jp/api/")
             .addConverterFactory(GsonConverterFactory.create())
@@ -47,7 +47,6 @@ class RetrofitRxjava2Activity : AppCompatActivity(), ErrorDialogFragment.OnFragm
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(object : Subscriber<Search> {
                     override fun onSubscribe(subscription: Subscription?) {
-                        Log.d("RetrofitRxjava2", "onSubscribe")
                         subscription?.request(1000)
                     }
 
@@ -68,11 +67,11 @@ class RetrofitRxjava2Activity : AppCompatActivity(), ErrorDialogFragment.OnFragm
                     }
 
                     override fun onComplete() {
-                        Log.d("RetrofitRxjava2", "onComplete")
+                        //Log.d("RetrofitRxjava2", "onComplete")
                     }
 
                     override fun onError(throwable: Throwable?) {
-                        Log.d("RetrofitRxjava2", "onError : " + throwable?.message)
+                        Log.d("RetrofitRxjava2", "onError : " + throwable)
                         throwable?.let {
                             val errorDialogFragment = ErrorDialogFragment.newInstance(it.message ?: "error")
                             errorDialogFragment.show(supportFragmentManager, "ErrorDialogFragment")
@@ -81,64 +80,9 @@ class RetrofitRxjava2Activity : AppCompatActivity(), ErrorDialogFragment.OnFragm
                 })
     }
 
-//    // これはpolling
-//    // http://nagochi.hatenablog.jp/entry/2017/03/14/001430
-//    private var connectPollingListener = View.OnClickListener {
-//        val service = retrofit.create(ApiService::class.java)
-//        service.searchZip(zipcode = zipCode.text.toString())
-//                .retryWhen(object : io.reactivex.functions.Function<Flowable<Throwable>, Flowable<Long>> {
-//                    override fun apply(t: Flowable<Throwable>): Flowable<Long> {
-//                        return t.flatMap(object : io.reactivex.functions.Function<Throwable, Flowable<Long>> {
-//                            override fun apply(throwable: Throwable): Flowable<Long> {
-//                                Log.d("RetrofitRxjava2", "apply Throwable ")
-//                                val errorDialogFragment = ErrorDialogFragment.newInstance(throwable.message ?: "")
-//                                errorDialogFragment.show(supportFragmentManager, "ErrorDialogFragment")
-//
-////                                if (throwable) {
-////
-////                                }
-//                                return Flowable.timer(5, TimeUnit.SECONDS)
-//                            }
-//                        })
-//                    }
-//                })
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(object : Subscriber<Search> {
-//                    override fun onSubscribe(subscription: Subscription?) {
-//                        Log.d("RetrofitRxjava2", "onSubscribe")
-//                        subscription?.request(1000)
-//                    }
-//
-//                    override fun onNext(search: Search?) {
-//                        Log.d("RetrofitRxjava2", "onNext")
-//                        search?.results?.forEach({
-//                            answer.text = with(StringBuilder()) {
-//                                append(it.address1)
-//                                append(it.address2)
-//                                append(it.address3)
-//                                append(it.kana1)
-//                                append(it.kana2)
-//                                append(it.kana3)
-//                            }
-//                        })
-//                    }
-//
-//                    override fun onComplete() {
-//                        Log.d("RetrofitRxjava2", "onComplete")
-//                    }
-//
-//                    override fun onError(t: Throwable?) {
-//                        Log.d("RetrofitRxjava2", "onError : " + t?.message)
-//                    }
-//
-//                })
-//    }
-
-    // http://nagochi.hatenablog.jp/entry/2017/03/14/001430
+    // リトライ接続
     private var connectRetryListener = View.OnClickListener {
         val service = retrofit.create(ApiService::class.java)
-        val zipcode = zipCode.text.toString()
         var retroyCount = 0
         service.searchZip(zipcode = zipCode.text.toString())
                 .retryWhen(object : io.reactivex.functions.Function<Flowable<Throwable>, Flowable<Long>> {
@@ -147,21 +91,11 @@ class RetrofitRxjava2Activity : AppCompatActivity(), ErrorDialogFragment.OnFragm
                             override fun apply(throwable: Throwable): Flowable<Long> {
                                 Log.d("RetrofitRxjava2", "apply Throwable " + retroyCount)
                                 retroyCount = retroyCount + 1
-                                retryCount.text = retroyCount.toString()
-                                if (retroyCount > 2) {
+                                if (retroyCount > 2 && throwable.message == "HTTP 404 Not Found") {
                                     Log.d("RetrofitRxjava2", "apply retroyCount ")
                                     return Flowable.error(throwable)
                                 }
-//                                val errorDialogFragment = ErrorDialogFragment.newInstance(throwable.message ?: "")
-//                                errorDialogFragment.show(supportFragmentManager, "ErrorDialogFragment")
-
-//                                if (throwable) {
-//
-//                                }
-                                //
                                 return Flowable.timer(5, TimeUnit.SECONDS)
-                                // return Flowable.just(Search(throwable.message, arrayListOf(), 600))
-                                //return service.searchZip(zipcode)
                             }
                         })
                     }
@@ -193,7 +127,10 @@ class RetrofitRxjava2Activity : AppCompatActivity(), ErrorDialogFragment.OnFragm
                     }
 
                     override fun onError(t: Throwable?) {
-                        Log.d("RetrofitRxjava2", "onError : " + t?.message)
+                        t?.let {
+                            val errorDialogFragment = ErrorDialogFragment.newInstance(it.message + " : retry ${retroyCount}回"  ?: "error")
+                            errorDialogFragment.show(supportFragmentManager, "ErrorDialogFragment")
+                        }
                     }
 
                 })
